@@ -15,6 +15,7 @@ window.onload = () => {
     ctx.clearRect(0, 0, boardSize, boardSize);
     ctx.fillRect(10, 10, 30, 30);
 
+    
     window.requestAnimationFrame(draw);
   }
 };
