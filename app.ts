@@ -1,12 +1,11 @@
 window.onload = () => {
-  const boardSize = 200;
+  const boardSize = 800;
 
 
   let random: number[][];         //random Array
-  let mirrorRandom: number[][];    //Array where it's noted down if a cell is alive(1) or dead(0)
-  mirrorRandom = random;
+  let mirrorRandom: number[][] = random;    //Array where it's noted down if a cell is alive(1) or dead(0)
   // let liveCount: number = 0;     //counter of the cells that are alive
-  let totalCells: number;
+  let numCells: number;
 
   //-----------CANVAS----------
   // Get reference to canvas
@@ -27,9 +26,18 @@ window.onload = () => {
     window.requestAnimationFrame(draw);
   }
 
+  //draw cells
+  function drawCells() {
+    ctx.clearRect(0, 0, canvas.height, canvas.width);
+    for (let i = 0; i < canvas.height; i++) {
+      for (let j = 0; j < canvas.width; j++) {
+        ctx.fillRect(4, 4, i, j);
+
+      }
+    }
+  }
 
   //set random cells:
-
   function fillRandomly() {
     for (let i = 100; i < 100 - canvas.height; i++) {
       for (let j = 100; j < 100 - canvas.width; j++) {
@@ -39,54 +47,42 @@ window.onload = () => {
 
   }
 
-  //draw cells
-  function drawCells() {
-    ctx.clearRect(0, 0, boardSize, boardSize);
-    for (let i = 0; i < canvas.height; i++) {
-      for (let j = 0; j < canvas.width; j++) {
-        ctx.fillRect(i, j, 4, 4);
-
-      }
-    }
-
-  }
-
   function updateField() {
     for (let i = 0; i < canvas.height; i++) {
       for (let j = 0; j < canvas.width; j++) {
-        totalCells = 0;
 
-        //add the number in the neighbour cells -> alive = number 1 in neighbor cell dead = number 0 in neighbor cell
-        totalCells += random[i - 1][j - 1]; //top left
-        totalCells += random[i - 1][j]; //top center
-        totalCells += random[j - 1][j + 1]; //top right
+        //add the number in the neighbour cells -> alive = number 1 in neighbor cell      dead = number 0 in neighbor cell
+        numCells += random[j - 1][j + 1]; //top right
+        numCells += random[i - 1][j - 1]; //top left
+        numCells += random[i - 1][j];     //top center
 
-        totalCells += random[i][j - 1]; //middle left
-        totalCells += random[i][j + 1]; //middle right
+        numCells += random[i][j + 1]; //middle right
+        numCells += random[i][j - 1]; //middle left
 
-        totalCells += random[i + 1][j - 1]; //bottom left
-        totalCells += random[i + 1][j]; //bottom center
-        totalCells += random[i + 1][j + 1]; //bottom right
+        numCells += random[i + 1][j - 1]; //bottom left
+        numCells += random[i + 1][j + 1]; //bottom right
+        numCells += random[i + 1][j]; //bottom center
 
-
-
-        //check "game of life" - rules based on the sum of the neighbor cells
-        switch (totalCells) {
+        //check "game of life" - rules based on the sum of the neighbor-cell-numbers added above 
+        switch (numCells) {
           case 2: {
             mirrorRandom[i][j] = random[i][j]; break; //nothing changes
           }
-
 
           case 3: {
             mirrorRandom[i][j] = 1; break;        //alive
           }
 
           default: {
-            mirrorRandom[i][j] = 0;                      //dead
+            mirrorRandom[i][j] = 0;               //dead
           }
 
-
         }
+
+        //exchange the arrays
+        let help = random;
+        random = mirrorRandom;
+        mirrorRandom = help;
 
       }
     }
